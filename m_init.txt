@@ -1,18 +1,36 @@
 # 每个分支下都有m_init.txt, 且module_tag和分支名称相同
-module_tag=master
+module_tag=v1
 
-# 判断git命令是否存在
-git version &>/dev/null || apt install -y git
+# 判断git命令是否存在, 没有则安装
+function init() {
+	git version &>/dev/null
 
-# 如果/tmp/shell_module存在, 且修改时间小于10, 则跳过这一步
-# 如果/tmp/shell_module不存在, 或者修改时间大于10. 则删除/tmp/shell_module, 重新下载
-if [ `find /tmp -type d -name 'shell_module' -mtime -10 | wc -l` -lt 1 ];then
-    cd /tmp
-    rm -rf shell_module
-    git clone -b ${module_tag} https://gitee.com/hemingway99/shell_module.git &>/dev/null
-fi
+	if [ $? -ne 0 ];then
+		echo "开始安装git"
+		apt update &>/dev/null
+		apt install -y git &>/dev/null
+	fi
+}
 
-# 循环执行所有shell脚本
-for pkg in `find /tmp/shell_module -name '*sh'` ;do
-    source ${pkg}
-done
+
+function download_module() {
+	# 如果/tmp/shell_module存在, 且修改时间小于30, 则跳过这一步
+	# 如果/tmp/shell_module不存在, 或者修改时间大于30. 则删除/tmp/shell_module, 重新下载
+	if [ `find /tmp -type d -name 'shell_module' -mtime -30 | wc -l` -lt 1 ];then
+		cd /tmp
+		rm -rf shell_module &>/dev/null
+		git clone -b ${module_tag} https://gitee.com/hemingway99/shell_module.git &>/dev/null
+	fi
+}
+
+
+function source_module() {
+	# 循环执行所有shell脚本
+	for pkg in `find /tmp/shell_module -name '*sh'` ;do
+		source ${pkg}
+	done
+}
+
+init
+download_module
+source_module

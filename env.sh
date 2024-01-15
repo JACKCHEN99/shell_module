@@ -1,11 +1,8 @@
-# 当前时期
+# log.sh 日志头的时间格式
 log_date=`date +%F_%T`
-
-# 执行脚本所在的根目录
+# 所执行脚本的绝对路径
 SCRIPT_ROOT_DIR=`cd $(dirname $0);pwd`
-
-# 执行脚本的绝对路径
-SCRIPT_NAME=$0
-
-# 当前脚本的执行日志的文件路径
+# 所执行脚本的名称
+SCRIPT_NAME=`echo $0 | awk -F / '{print $NF}'`
+# log.sh使用, 所执行脚本的日志文件路径和名称
 SCRIPT_LOG_FILE=${SCRIPT_ROOT_DIR}/.`echo ${SCRIPT_NAME%%.*}`.log
